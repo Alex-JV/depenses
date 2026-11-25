@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Xokololo">
+<meta name="theme-color" content="#EEF1EC">
+<title>Xokololo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💸</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1EC; --surface:#FFFFFF; --ink:#1F2421; --muted:#5E6862; --line:#D5DBD5;
+  --chef:#1E6F6A; --cheffe:#B83A6B; --xoko:#B8860B; --chef-soft:#DCEDEB; --cheffe-soft:#F6DFE8; --xoko-soft:#F5EBCF;
+  --font:"Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme:dark;
+    --bg:#151917; --surface:#1F2421; --ink:#ECEFEC; --muted:#9AA59F; --line:#333A36;
+    --chef:#5FC2BA; --cheffe:#EE86AE; --xoko:#E3B94A; --chef-soft:#1D3533; --cheffe-soft:#3A2230; --xoko-soft:#3A311A;
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.45}
+main{max-width:560px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+h1{font-size:2.4rem;font-weight:800;letter-spacing:-.03em;margin:8px 0 2px;line-height:1}
+.sub{color:var(--muted);margin:0 0 20px}
+h2{font-size:1.15rem;font-weight:600;margin:28px 0 10px}
+[hidden]{display:none !important}
+
+.balance{background:var(--surface);border-radius:20px;padding:20px 18px 18px;border:1px solid var(--line)}
+.scale{position:relative;height:14px;border-radius:7px;background:linear-gradient(90deg,var(--chef-soft) 50%,var(--cheffe-soft) 50%);margin:14px 0 8px}
+.scale .mid{position:absolute;left:50%;top:-6px;bottom:-6px;width:2px;background:var(--ink);opacity:.35}
+.scale .dot{position:absolute;top:50%;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);background:var(--ink);border:4px solid var(--surface);transition:left .5s cubic-bezier(.3,1.4,.5,1)}
+.ends{display:flex;justify-content:space-between;font-size:.85rem;font-weight:600}
+.ends .c1{color:var(--chef)} .ends .c2{color:var(--cheffe)}
+.verdict{font-size:1.35rem;font-weight:600;margin:0;letter-spacing:-.01em}
+.verdict b{font-weight:800}
+.settleAll{margin-top:14px}
+
+form{display:grid;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px}
+label{display:grid;gap:4px;font-size:.9rem;color:var(--muted)}
+input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+input:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+fieldset{border:0;padding:0;margin:0;display:grid;gap:6px}
+legend{font-size:.9rem;color:var(--muted);margin-bottom:6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg input{position:absolute;opacity:0;width:1px;height:1px}
+.seg label{display:inline-block;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer;font-size:.95rem}
+.seg input:checked + label{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.seg input:focus-visible + label{outline:2px solid var(--ink);outline-offset:2px}
+
+button{font:inherit;font-weight:600;border-radius:10px;padding:10px 14px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+button.primary{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+button.xoko{background:var(--xoko-soft);border-color:var(--xoko);color:var(--ink)}
+button.small{padding:7px 11px;font-size:.88rem}
+button.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+button:disabled{opacity:.5;cursor:wait}
+
+ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px;border-left:5px solid var(--who)}
+li.done{opacity:.6}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.desc{font-weight:600;overflow-wrap:anywhere}
+.amt{font-weight:800;font-size:1.1rem;white-space:nowrap}
+.meta{color:var(--muted);font-size:.88rem;margin:2px 0 8px}
+.actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.status{font-size:.88rem;font-weight:600}
+.empty{color:var(--muted);text-align:center;padding:22px;border:1px dashed var(--line);border-radius:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px 18px;display:grid;gap:14px}
+.card p{margin:0}
+.error{color:var(--cheffe);font-weight:600}
+@media (prefers-reduced-motion: reduce){.scale .dot{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Xokololo</h1>
+      <p class="sub" id="who">Les comptes de Chef et Cheffe</p>
+    </div>
+    <button type="button" class="ghost small" id="logoutBtn" hidden>Se déconnecter</button>
+  </header>
+
+  <!-- Écran de connexion -->
+  <section class="card" id="loginView" hidden>
+    <p>Connecte‑toi avec ton compte Google pour voir vos dépenses.</p>
+    <button type="button" class="primary" id="loginBtn">Se connecter avec Google</button>
+    <p class="error" id="loginError" hidden></p>
+  </section>
+
+  <!-- Compte non autorisé -->
+  <section class="card" id="deniedView" hidden>
+    <p>Ce compte Google n’a pas accès aux comptes de Xokololo. Connecte‑toi avec votre compte Google commun.</p>
+    <button type="button" id="switchBtn">Changer de compte</button>
+  </section>
+
+  <!-- Chargement / erreurs -->
+  <p class="sub" id="loading">Chargement…</p>
+  <p class="error" id="appError" hidden></p>
+
+  <!-- Appli -->
+  <div id="appView" hidden>
+    <section class="balance" aria-live="polite">
+      <p class="verdict" id="verdict">Vous êtes quittes.</p>
+      <div class="scale" aria-hidden="true"><div class="mid"></div><div class="dot" id="dot" style="left:50%"></div></div>
+      <div class="ends"><span class="c1">Chef</span><span class="c2">Cheffe</span></div>
+      <div id="settleAllBox"></div>
+    </section>
+
+    <h2>Nouvelle dépense</h2>
+    <form id="form">
+      <label>Description<input id="desc" required placeholder="Courses, resto, ciné…" autocomplete="off"></label>
+      <div class="row">
+        <label>Montant (€)<input id="amount" type="number" inputmode="decimal" min="0.01" step="0.01" required placeholder="0,00"></label>
+        <label>Date<input id="date" type="date" required></label>
+      </div>
+      <fieldset>
+        <legend>Qui a payé ?</legend>
+        <div class="seg">
+          <input type="radio" name="payer" id="p1" value="chef" checked><label for="p1">Chef</label>
+          <input type="radio" name="payer" id="p2" value="cheffe"><label for="p2">Cheffe</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Pour qui ?</legend>
+        <div class="seg">
+          <input type="radio" name="forwho" id="f1" value="couple" checked><label for="f1">Le couple</label>
+          <input type="radio" name="forwho" id="f2" value="other"><label for="f2" id="otherLabel">Cheffe</label>
+        </div>
+      </fieldset>
+      <button class="primary" type="submit" id="addBtn">Ajouter la dépense</button>
+    </form>
+
+    <h2>Dépenses</h2>
+    <ul id="list"></ul>
+  </div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, writeBatch, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* =====================================================================
+   À REMPLIR (étapes 3 et 4 du guide)
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyAIcz0KCEu5DoQ69XlIDEroTqHK0C_Azjo",
+  authDomain: "xokokolo-depenses.firebaseapp.com",
+  projectId: "xokokolo-depenses",
+  storageBucket: "xokokolo-depenses.firebasestorage.app",
+  messagingSenderId: "1050644192554",
+  appId: "1:1050644192554:web:ebd9dfe1ac88e45c26d253"
+};
+
+// L'adresse Gmail de votre compte commun
+const COMPTE_COMMUN = "jacques.xokokolo@gmail.com";
+/* ===================================================================== */
+
+const NAMES = { chef: "Chef", cheffe: "Cheffe" };
+const other = p => (p === "chef" ? "cheffe" : "chef");
+const eur = n => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+const $ = id => document.getElementById(id);
+const owed = e => (e.forwho === "couple" ? e.amount / 2 : e.amount);
+
+let expenses = [];
+let unsubscribe = null;
+let db, auth;
+
+function show(view){
+  for (const v of ["loginView", "deniedView", "appView", "loading"]) $(v).hidden = v !== view;
+}
+function fail(msg){ $("appError").textContent = msg; $("appError").hidden = false; }
+
+if (firebaseConfig.apiKey === "COLLE_ICI"){
+  show(null);
+  fail("La configuration Firebase n’est pas encore remplie dans index.html (voir l’étape 3 du guide).");
+} else {
+  const app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+  onAuthStateChanged(auth, user => {
+    if (unsubscribe){ unsubscribe(); unsubscribe = null; }
+    $("logoutBtn").hidden = !user;
+    if (!user){ show("loginView"); $("who").textContent = "Les comptes de Chef et Cheffe"; return; }
+    if ((user.email || "").toLowerCase() !== COMPTE_COMMUN.toLowerCase()){ show("deniedView"); return; }
+    $("who").textContent = "Les comptes de Chef et Cheffe";
+    let last = null;
+    try { last = localStorage.getItem("xokololo-payeur"); } catch (e){}
+    if (last === "chef" || last === "cheffe") document.querySelector(`input[name="payer"][value="${last}"]`).checked = true;
+    syncOther();
+    show("loading");
+    unsubscribe = onSnapshot(collection(db, "depenses"), snap => {
+      expenses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      show("appView"); render();
+    }, err => {
+      show(null);
+      fail("Impossible de lire les dépenses. Vérifie les règles Firestore (étape 4 du guide). Détail : " + err.code);
+    });
+  });
+}
+
+$("loginBtn").onclick = async () => {
+  $("loginError").hidden = true;
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  try { await signInWithPopup(auth, provider); }
+  catch (e){
+    if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment"){
+      await signInWithRedirect(auth, provider);
+    } else if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request"){
+      $("loginError").textContent = "Connexion impossible : " + e.code;
+      $("loginError").hidden = false;
+    }
+  }
+};
+$("logoutBtn").onclick = () => signOut(auth);
+$("switchBtn").onclick = () => signOut(auth);
+
+function btn(text, cls, fn){
+  const b = document.createElement("button"); b.type = "button"; b.className = cls; b.textContent = text; b.onclick = fn; return b;
+}
+
+async function settleAll(mode, txt){
+  if (!confirm(`Tout régler : ${txt} ?`)) return;
+  const batch = writeBatch(db);
+  expenses.filter(e => !e.settled).forEach(e => batch.update(doc(db, "depenses", e.id), { settled: mode, settledAt: serverTimestamp() }));
+  try { await batch.commit(); } catch (e){ alert("L’enregistrement a échoué : " + e.code); }
+}
+
+function render(){
+  let net = 0; // positif = Cheffe doit à Chef
+  for (const e of expenses) if (!e.settled) net += e.payer === "chef" ? owed(e) : -owed(e);
+  net = Math.round(net * 100) / 100;
+
+  const box = $("settleAllBox"); box.innerHTML = "";
+  if (Math.abs(net) < 0.005){
+    $("verdict").textContent = "Vous êtes quittes.";
+  } else {
+    const debtor = net > 0 ? "Cheffe" : "Chef", creditor = net > 0 ? "Chef" : "Cheffe", n = Math.abs(net);
+    $("verdict").innerHTML = `${debtor} doit <b>${eur(n)}</b> à ${creditor}.`;
+    const wrap = document.createElement("div"); wrap.className = "actions settleAll";
+    wrap.appendChild(btn(`${debtor} verse ${eur(n * 2)} sur Xokololo`, "xoko", () => settleAll("xoko", `${debtor} verse ${eur(n * 2)} sur Xokololo`)));
+    wrap.appendChild(btn(`${debtor} verse ${eur(n)} à ${creditor}`, "primary", () => settleAll("direct", `${debtor} verse ${eur(n)} à ${creditor}`)));
+    box.appendChild(wrap);
+  }
+  const total = expenses.filter(e => !e.settled).reduce((s, e) => s + owed(e), 0) || 1;
+  const tilt = Math.max(-1, Math.min(1, net / total));
+  $("dot").style.left = (50 - tilt * 42) + "%";
+
+  const list = $("list"); list.innerHTML = "";
+  if (!expenses.length){
+    const li = document.createElement("li"); li.className = "empty"; li.style.borderLeft = "1px dashed var(--line)";
+    li.textContent = "Ajoutez votre première dépense ci‑dessus."; list.appendChild(li); return;
+  }
+  [...expenses].sort((a, b) => (b.date + b.id).localeCompare(a.date + a.id)).forEach(e => {
+    const li = document.createElement("li");
+    li.style.setProperty("--who", `var(--${e.payer === "cheffe" ? "cheffe" : "chef"})`);
+    if (e.settled) li.classList.add("done");
+    const forTxt = e.forwho === "couple" ? "pour le couple" : `pour ${NAMES[other(e.payer)]}`;
+    const d = new Date(e.date + "T12:00").toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+
+    const top = document.createElement("div"); top.className = "top";
+    const desc = document.createElement("span"); desc.className = "desc"; desc.textContent = e.desc;
+    const amt = document.createElement("span"); amt.className = "amt"; amt.textContent = eur(Number(e.amount) || 0);
+    top.append(desc, amt);
+    const meta = document.createElement("div"); meta.className = "meta";
+    meta.textContent = `Payé par ${NAMES[e.payer] || "?"}, ${forTxt} · ${d}`;
+    const act = document.createElement("div"); act.className = "actions";
+    if (e.settled){
+      const s = document.createElement("span"); s.className = "status";
+      s.textContent = e.settled === "xoko" ? "Réglé via Xokololo" : "Réglé directement";
+      act.appendChild(s);
+    } else {
+      act.appendChild(btn("Supprimer", "small ghost", async () => {
+        if (confirm("Supprimer cette dépense ?")) {
+          try { await deleteDoc(doc(db, "depenses", e.id)); } catch (err){ alert("Suppression impossible : " + err.code); }
+        }
+      }));
+    }
+    li.append(top, meta, act);
+    list.appendChild(li);
+  });
+}
+
+function syncOther(){
+  const p = document.querySelector('input[name="payer"]:checked').value;
+  $("otherLabel").textContent = NAMES[other(p)];
+}
+document.querySelectorAll('input[name="payer"]').forEach(r => r.addEventListener("change", () => {
+  syncOther();
+  try { localStorage.setItem("xokololo-payeur", r.value); } catch (e){}
+}));
+
+$("date").valueAsDate = new Date();
+$("form").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const amount = Math.round(parseFloat($("amount").value.replace(",", ".")) * 100) / 100;
+  if (!(amount > 0)) return;
+  $("addBtn").disabled = true;
+  try {
+    await addDoc(collection(db, "depenses"), {
+      desc: $("desc").value.trim(),
+      amount,
+      date: $("date").value,
+      payer: document.querySelector('input[name="payer"]:checked').value,
+      forwho: document.querySelector('input[name="forwho"]:checked').value,
+      settled: false,
+      createdBy: auth.currentUser.email,
+      createdAt: serverTimestamp()
+    });
+    $("desc").value = ""; $("amount").value = ""; $("desc").focus();
+  } catch (e){ alert("L’ajout a échoué : " + e.code); }
+  $("addBtn").disabled = false;
+});
+</script>
+</body>
+</html>
