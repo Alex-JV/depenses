@@ -72,6 +72,15 @@ button.ghost{border-color:transparent;background:transparent;color:var(--muted)}
 button:disabled{opacity:.5;cursor:wait}
 
 ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+#list{display:grid;gap:12px}
+details.month > summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+details.month > summary::-webkit-details-marker{display:none}
+details.month > summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.mname{font-weight:700;font-size:1.05rem;text-transform:capitalize;display:flex;align-items:center;gap:8px}
+.mname::before{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .2s}
+details.month[open] .mname::before{transform:rotate(45deg) translate(-2px,-2px)}
+.msum{color:var(--muted);font-size:.9rem;white-space:nowrap}
+details.month > ul{margin-top:10px}
 li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px;border-left:5px solid var(--who)}
 li.done{opacity:.6}
 .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
@@ -148,7 +157,7 @@ li.done{opacity:.6}
     </form>
 
     <h2>Dépenses</h2>
-    <ul id="list"></ul>
+    <div id="list"></div>
   </div>
 </main>
 
@@ -182,6 +191,9 @@ const $ = id => document.getElementById(id);
 const owed = e => (e.forwho === "couple" ? e.amount / 2 : e.amount);
 
 let expenses = [];
+// Le mois en cours est déplié, les mois précédents sont repliés
+const now = new Date();
+const openMonths = new Set([`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`]);
 let unsubscribe = null;
 let db, auth;
 
@@ -268,10 +280,31 @@ function render(){
 
   const list = $("list"); list.innerHTML = "";
   if (!expenses.length){
-    const li = document.createElement("li"); li.className = "empty"; li.style.borderLeft = "1px dashed var(--line)";
-    li.textContent = "Ajoutez votre première dépense ci‑dessus."; list.appendChild(li); return;
+    const em = document.createElement("div"); em.className = "empty";
+    em.textContent = "Ajoutez votre première dépense ci‑dessus."; list.appendChild(em); return;
   }
+  // Regroupement par mois, du plus récent au plus ancien
+  const groups = new Map();
   [...expenses].sort((a, b) => (b.date + b.id).localeCompare(a.date + a.id)).forEach(e => {
+    const k = (e.date || "").slice(0, 7);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(e);
+  });
+  for (const [k, items] of groups){
+    const det = document.createElement("details"); det.className = "month";
+    det.open = openMonths.has(k);
+    det.addEventListener("toggle", () => { det.open ? openMonths.add(k) : openMonths.delete(k); });
+    const sum = document.createElement("summary");
+    const name = document.createElement("span"); name.className = "mname";
+    name.textContent = new Date(k + "-15T12:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+    const tot = items.reduce((t, e) => t + (Number(e.amount) || 0), 0);
+    const info = document.createElement("span"); info.className = "msum";
+    info.textContent = `${items.length} dépense${items.length > 1 ? "s" : ""} · ${eur(tot)}`;
+    sum.append(name, info);
+    const ul = document.createElement("ul");
+    det.append(sum, ul);
+    list.appendChild(det);
+    items.forEach(e => {
     const li = document.createElement("li");
     li.style.setProperty("--who", `var(--${e.payer === "cheffe" ? "cheffe" : "chef"})`);
     if (e.settled) li.classList.add("done");
@@ -297,8 +330,9 @@ function render(){
       }));
     }
     li.append(top, meta, act);
-    list.appendChild(li);
-  });
+    ul.appendChild(li);
+    });
+  }
 }
 
 function syncOther(){
