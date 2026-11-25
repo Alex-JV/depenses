@@ -51,7 +51,11 @@ form{display:grid;gap:12px;background:var(--surface);border:1px solid var(--line
 label{display:grid;gap:4px;font-size:.9rem;color:var(--muted)}
 input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
 input:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.row > label{min-width:0}
+input{min-width:0;max-width:100%;display:block}
+input[type="date"]{-webkit-appearance:none;appearance:none;min-height:44px}
+input[type="date"]::-webkit-date-and-time-value{text-align:left}
 fieldset{border:0;padding:0;margin:0;display:grid;gap:6px}
 legend{font-size:.9rem;color:var(--muted);margin-bottom:6px}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
