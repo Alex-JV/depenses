@@ -38,9 +38,9 @@ h2{font-size:1.15rem;font-weight:600;margin:28px 0 10px}
 [hidden]{display:none !important}
 
 .balance{background:var(--surface);border-radius:20px;padding:20px 18px 18px;border:1px solid var(--line)}
-.scale{position:relative;height:14px;border-radius:7px;background:linear-gradient(90deg,var(--chef-soft) 50%,var(--cheffe-soft) 50%);margin:14px 0 8px}
+.scale{position:relative;height:14px;border-radius:7px;background:linear-gradient(90deg,var(--chef-soft) 50%,var(--cheffe-soft) 50%);margin:24px 0 16px}
 .scale .mid{position:absolute;left:50%;top:-6px;bottom:-6px;width:2px;background:var(--ink);opacity:.35}
-.scale .dot{position:absolute;top:50%;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);background:var(--ink);border:4px solid var(--surface);transition:left .5s cubic-bezier(.3,1.4,.5,1)}
+.scale .dot{position:absolute;top:50%;font-size:30px;line-height:1;transform:translate(-50%,-52%);filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));transition:left .5s cubic-bezier(.3,1.4,.5,1)}
 .ends{display:flex;justify-content:space-between;font-size:.85rem;font-weight:600}
 .ends .c1{color:var(--chef)} .ends .c2{color:var(--cheffe)}
 .verdict{font-size:1.35rem;font-weight:600;margin:0;letter-spacing:-.01em}
@@ -118,7 +118,7 @@ li.done{opacity:.6}
   <div id="appView" hidden>
     <section class="balance" aria-live="polite">
       <p class="verdict" id="verdict">Vous êtes quittes.</p>
-      <div class="scale" aria-hidden="true"><div class="mid"></div><div class="dot" id="dot" style="left:50%"></div></div>
+      <div class="scale" aria-hidden="true"><div class="mid"></div><div class="dot" id="dot" style="left:50%">💶</div></div>
       <div class="ends"><span class="c1">Chef</span><span class="c2">Cheffe</span></div>
       <div id="settleAllBox"></div>
     </section>
